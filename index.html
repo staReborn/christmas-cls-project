@@ -1,0 +1,55 @@
+<html>
+    <head>
+        <script>
+            function decrypt(str, pwd) {
+            if(str == null || str.length < 8) {
+            alert('A salt value could not be extracted from the encrypted message because its length is too short. The message cannot be decrypted.');
+            return;
+            }
+            if(pwd == null || pwd.length <= 0) {
+            alert('Please enter a password with which to decrypt the message.');
+            return;
+            }
+            var prand ='';
+            for(var i=0; i<pwd.length; i++) {
+            prand += pwd.charCodeAt(i).toString();
+            }
+            var sPos = Math.floor(prand.length / 5);
+            var mult = parseInt(prand.charAt(sPos) + prand.charAt(sPos*2) + prand.charAt(sPos*3) + prand.charAt(sPos*4) + prand.charAt(sPos*5));
+            var incr = Math.round(pwd.length / 2);
+            var modu = Math.pow(2, 31) - 1;
+            var salt = parseInt(str.substring(str.length - 8, str.length), 16);
+            str = str.substring(0, str.length - 8);
+            prand += salt;
+            while(prand.length > 10) {
+            prand = (parseInt(prand.substring(0, 10)) + parseInt(prand.substring(10, prand.length))).toString();
+            }
+            prand = (mult * prand + incr) % modu;
+            var enc_chr = '';
+            var enc_str = '';
+            for(var i=0; i<str.length; i+=2) {
+            enc_chr = parseInt(parseInt(str.substring(i, i+2), 16) ^ Math.floor((prand / modu) * 255));
+            enc_str += String.fromCharCode(enc_chr);
+            prand = (mult * prand + incr) % modu;
+            }
+            return enc_str;
+            }
+            
+            function protection() {
+            encURL = 'c6c7b0aa117c1680c77cfd18b52cb718385f94020bcbddc7bf3a7021afb48dc3a8fbfc3215cd0989a889eb9cff5107cc5f3e226d572a04ce5e81';
+            password=prompt('enter the password:','');
+            if (password != '' && password != null) {
+            decURL=decrypt(encURL, password);
+            location.href= decURL;
+            }
+            }
+            </script>
+        <title>Christmas CLS project</title>
+    </head>
+    <body>
+        <button onclick="protection()">Input PWD Here</button>
+        <h1>Yo!!!</h1>
+        <p>Hint of pwd is from the qr codes!</p>
+        <macquee><h3 style=color:blue>CHRISTMAS CLS PROJECT</h3></macquee>
+    </body>
+</html>
